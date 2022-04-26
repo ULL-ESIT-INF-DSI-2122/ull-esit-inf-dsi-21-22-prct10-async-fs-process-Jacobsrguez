@@ -32,3 +32,4 @@ describe('substract function tests', () => {
     expect(substract(6.7, 9.8)).to.be.approximately(-3.1, 0.000000000001);
   });
 });
+
