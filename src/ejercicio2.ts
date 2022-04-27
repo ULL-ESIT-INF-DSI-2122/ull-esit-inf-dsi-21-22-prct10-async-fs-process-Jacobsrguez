@@ -40,4 +40,3 @@ export class CatGrep {
   }
 }
 new CatGrep().forma1();
-
