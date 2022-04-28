@@ -39,6 +39,9 @@ export class CatGrep {
       });
     }
   }
+  /**
+   * Método forma 2 que resuelve el ejercicio 1 sin usar el metodo pipe
+   */
   public forma2() {
     if (process.argv.length !== 4) {
       console.log(chalk.red('Por favor ponga un archivo y una palabra a buscar.'));
