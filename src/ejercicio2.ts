@@ -1,8 +1,6 @@
-// import * as fs from 'fs';
 import {spawn} from 'child_process';
 import {access} from 'fs';
 import * as chalk from 'chalk';
-import { mainModule } from 'process';
 /**
  * Clase CatGrep que resuelve el ejercicio 1 propuesto de 2 maneras diferentes cada una de ellas expresadas su respectivo metodo
  */
