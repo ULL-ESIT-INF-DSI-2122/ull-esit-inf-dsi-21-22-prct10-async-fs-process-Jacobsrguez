@@ -32,47 +32,115 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public newDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.mkdir(process.argv[2], (err) => {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("No se pudo crear el directorio " + err.message), undefined);
+        callback(chalk.red("El directorio no existe " + err.message), undefined);
       } else {
-        callback(undefined, chalk.green("El directorio ha sido creado"));
+        const mkdir = spawn('mkdir', [process.argv[2] + '/' + process.argv[3]]);
+        let mkdirOutput = '';
+        mkdir.stdout.on('data', (chain) => mkdirOutput += chain);
+        mkdir.on('close', () => {
+          callback(undefined, chalk.green("El directorio ha sido creado"));
+        });
       }
     });
   }
   /**
-   * Metodo que lista los archivos de un directorio
+   * Metodo que lista el contenido de un directorio
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public list(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.readdir(process.argv[2], (err, data) => {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("No se pudo listar el directorio " + err.message), undefined);
+        callback(chalk.red("El directorio no existe " + err.message), undefined);
       } else {
-        callback(undefined, chalk.green(data.toString()));
+        const ls = spawn('ls', [process.argv[2]]);
+        let lsOutput = '';
+        ls.stdout.on('data', (chain) => lsOutput += chain);
+        ls.on('close', () => {
+          callback(undefined, chalk.green(lsOutput));
+        });
       }
     });
   }
   /**
    * Metodo que muestra el contenido de un fichero
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public show(callback: (err: string | undefined, data: string | undefined) => void) : void {
     fs.access(process.argv[2], fs.constants.F_OK, (err) => {
       if (err) {
         callback(chalk.red("El archivo no existe " + err.message), undefined);
       } else {
-        fs.readFile(process.argv[2], (err, data) => {
-          if (err) {
-            callback(chalk.red("El archivo no pudo ser leido " + err.message), undefined);
-          } else {
-            callback(undefined, chalk.green(data.toString() + "\n" + "El archivo fue leido con exito"));
-          }
+        const cat = spawn('cat', [process.argv[2]]);
+        let catOutput = '';
+        cat.stdout.on('data', (chain) => catOutput += chain);
+        cat.on('close', () => {
+          callback(undefined, chalk.green(catOutput));
         });
       }
     });
   }
+  /**
+   * Metodo remove que elimina archivos y carpetas
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public remove(callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El archivo no existe " + err.message), undefined);
+      } else {
+        const rm = spawn('rm', ['-rf', process.argv[2]]);
+        let rmOutput = '';
+        rm.stdout.on('data', (chain) => rmOutput += chain);
+        rm.on('close', () => {
+          callback(undefined, chalk.green("El archivo ha sido eliminado"));
+        });
+      }
+    });
+  }
+
+  /**
+   * metodo que mueve directorios y ficheros
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public move(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const move = spawn('mv', [process.argv[2], process.argv[3]]);
+    let moveOutput = '';
+    move.stdout.on('data', (chain) => moveOutput += chain);
+    move.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido movido"));
+    });
+  }
+
+  /**
+   * Metodo que copia directorios
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public copyDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const copy = spawn('cp', ['-r', process.argv[2], process.argv[3]]);
+    let copyOutput = '';
+    copy.stdout.on('data', (chain) => copyOutput += chain);
+    copy.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    });
+  }
+
+  /**
+   * Metodo que copia ficheros
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public copyFile(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const copy = spawn('cp', [process.argv[2], process.argv[3]]);
+    let copyOutput = '';
+    copy.stdout.on('data', (chain) => copyOutput += chain);
+    copy.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    });
+  }
 }
 
-new Ejercicio4().list((err, data) => {
+new Ejercicio4().newDirectory((err, data) => {
   if (err) {
     console.log(err);
   } else if (data) {
