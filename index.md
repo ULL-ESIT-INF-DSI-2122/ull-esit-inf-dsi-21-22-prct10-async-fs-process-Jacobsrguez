@@ -125,7 +125,7 @@ export class Ejercicio3 {
           } else {
             fs.readFile(`./${this.user}/${filename}`, (err, data) => {
               if (err) {
-                callback(chalk.red("El archivo no fue modificado " + err.message), undefined);
+                callback(chalk.red("El archivo no pudo ser leido " + err.message), undefined);
               } else {
                 callback(undefined, chalk.green("El archivo fue modificado con exito " + data.toString()));
               }
