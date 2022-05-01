@@ -329,3 +329,5 @@ Despliego el comando move, inicializo la variable a vacio, la concanteno con el 
 
   Metodo `copyFile`  
   Despliego el comando cp, inicializo una variable a vacio para a posteriori concatenarla con el buffer. Una vez, hecho mostraremos que el archivo ha sido copiado .
+
+##**Profe le hice el ejecicio 4 hasta donde me dio tiempo de nuevo por si lo queria solo con funciones propias de node**
