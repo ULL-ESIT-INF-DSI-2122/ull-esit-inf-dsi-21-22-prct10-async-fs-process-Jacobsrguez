@@ -150,3 +150,179 @@ Con esto ya tengo cubierto el apartado de crear y borrar un fichero, y ya solo q
 ¿Como haria para que no solo se observase el directorio de un unico usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicacion de notas?  
 
 ### Ejercicio 4<a name = "ej4"></a>
+
+Desarrolle una aplicación que permita hacer de wrapper de los distintos comandos empleados en Linux para el manejo de ficheros y directorios. Para ello, cree una clase que tiene un metodo para la resoluion de cada puntos menos para el ultimo que para ese, creo varios metodos. 
+
+``` typescript
+export class Ejercicio4 {
+  constructor() {}
+  /**
+   * Método que demuestra si la ruta que se le pasa contiene un directorio o un fichero
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public directoryFile(callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El archivo no existe " + err.message), undefined);
+      } else {
+        const ls = spawn('ls', ['-ld', process.argv[2]]);
+        let lsOutput = '';
+        ls.stdout.on('data', (chain) => lsOutput += chain);
+        ls.on('close', () => {
+          const lsOutputAsArray = lsOutput.split(/\s+/);
+          if (lsOutputAsArray[0].includes('d')) {
+            callback(undefined, chalk.green("El archivo es un directorio"));
+          } else {
+            callback(undefined, chalk.green("El archivo es un fichero"));
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Metodo que crea un nuevo directorio a partir de una ruta pasada por parametro
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public newDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El directorio no existe " + err.message), undefined);
+      } else {
+        const mkdir = spawn('mkdir', [process.argv[2] + '/' + process.argv[3]]);
+        let mkdirOutput = '';
+        mkdir.stdout.on('data', (chain) => mkdirOutput += chain);
+        mkdir.on('close', () => {
+          callback(undefined, chalk.green("El directorio ha sido creado"));
+        });
+      }
+    });
+  }
+  /**
+   * Metodo que lista el contenido de un directorio
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public list(callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El directorio no existe " + err.message), undefined);
+      } else {
+        const ls = spawn('ls', [process.argv[2]]);
+        let lsOutput = '';
+        ls.stdout.on('data', (chain) => lsOutput += chain);
+        ls.on('close', () => {
+          callback(undefined, chalk.green(lsOutput));
+        });
+      }
+    });
+  }
+  /**
+   * Metodo que muestra el contenido de un fichero
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public show(callback: (err: string | undefined, data: string | undefined) => void) : void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El archivo no existe " + err.message), undefined);
+      } else {
+        const cat = spawn('cat', [process.argv[2]]);
+        let catOutput = '';
+        cat.stdout.on('data', (chain) => catOutput += chain);
+        cat.on('close', () => {
+          callback(undefined, chalk.green(catOutput));
+        });
+      }
+    });
+  }
+  /**
+   * Metodo remove que elimina archivos y carpetas
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public remove(callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El archivo no existe " + err.message), undefined);
+      } else {
+        const rm = spawn('rm', ['-rf', process.argv[2]]);
+        let rmOutput = '';
+        rm.stdout.on('data', (chain) => rmOutput += chain);
+        rm.on('close', () => {
+          callback(undefined, chalk.green("El archivo ha sido eliminado"));
+        });
+      }
+    });
+  }
+
+  /**
+   * metodo que mueve directorios y ficheros
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public move(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const move = spawn('mv', [process.argv[2], process.argv[3]]);
+    let moveOutput = '';
+    move.stdout.on('data', (chain) => moveOutput += chain);
+    move.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido movido"));
+    });
+  }
+
+  /**
+   * Metodo que copia directorios
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public copyDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const copy = spawn('cp', ['-r', process.argv[2], process.argv[3]]);
+    let copyOutput = '';
+    copy.stdout.on('data', (chain) => copyOutput += chain);
+    copy.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    });
+  }
+
+  /**
+   * Metodo que copia ficheros
+   * @param callback patron callback devuelve un error o un mensaje con la evento hecho
+   */
+  public copyFile(callback: (err: string | undefined, data: string | undefined) => void): void {
+    const copy = spawn('cp', [process.argv[2], process.argv[3]]);
+    let copyOutput = '';
+    copy.stdout.on('data', (chain) => copyOutput += chain);
+    copy.on('close', () => {
+      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    });
+  }
+}
+```
+
+Se nos pide:
+
+- Dada una ruta concreta, mostrar si es un directorio o un fichero.  
+Metodo `directoryFile`  
+Para ello lo que hago es primero comprobar que el archivo existe, si no existe llamo al callback y devuelvo que el archivo no existe, pero si el archivo existe. Despliego el comando ls y le paso las opciones -ld sobre el segundo argumento que se le pasa por comando que es la ruta del directorio o archivo. Luego inicializo una string a vacio. Ahora concateno los valores del buffer en la variable.  
+Una vez finaliozada la ejecucion anterior le hago un spplit a la variable para separar la cosas dentro de un array. Ya solo queda comprobar si en la parte de los permisos en la primera parte hay una d, si la hay quiere decir que es un directorio y si no la hay es que es un fichero y solo queda mostrar de lo que se trata
+
+- Crear un nuevo directorio a partir de una nueva ruta que recibe como parámetro.  
+Metodo `newDirectory`  
+Como en el metotodo anterior con el acces compruebo que si existe o no el archivo. Si no existe llamo al patron callback. Si existe, con el funcion spawn desplego el comando mdkir, y le paso la ruta y luego, el nombre del fichero. Inicializo una variable a vacio y luego la concateno con el buffe. Cuando esta halla terminado muestro que se creo directamente  
+
+- Listar los ficheros dentro de un directorio.  
+Metodo `list`  
+El esquema es el mismo que el anterior pero esta vez, despliego el comando ls, inicializo una variable a 0 que luego la voy concatenando con el buffer, y cuando haya acabado muestro a traves del callback la lista ficheros de el directorio  
+
+- Mostrar el contenido de un fichero.  
+Metodo `show`
+El esquema es el mismo, pero despliego el comando cat, inicializo la variable a vacio y luego la concateno con el buffer, y ya solo falta, mostrar el contenido a traves del callback  
+
+- Borrar ficheros y directorios.  
+Metodo `remove`  
+El esquema es el mismo, pero despliego el comando rm con la opcion -rf, despues inicializo la variable a vacio que la voy a concatenar con el buffer, y luego cuando acabe llamar al callback y que muestre que el archivo fue borrado satisfactoriamente  
+
+- Mover y copiar ficheros y/o directorios de una ruta a otra. Para este caso, la aplicación recibirá una ruta origen y una ruta destino. En caso de que la ruta origen represente un directorio, se debe copiar dicho directorio y todo su contenido a la ruta destino.  
+Metodo `move`  
+Despliego el comando move, inicializo la variable a vacio, la concanteno con el buffer y luego muestro que se movio satisfactoriamente.  
+
+  Metodo `copyDirectory`  
+  Despliego el comando cp, con la opcion -r, para poder copiar directorios, inicializo la variable a vacio, la concanteno con el buffer y luego muestro que se ha copiado.  
+
+  Metodo `copyFile`  
+  Despliego el comando cp, inicializo una variable a vacio para a posteriori concatenarla con el buffer. Una vez, hecho mostraremos que el archivo ha sido copiado .
