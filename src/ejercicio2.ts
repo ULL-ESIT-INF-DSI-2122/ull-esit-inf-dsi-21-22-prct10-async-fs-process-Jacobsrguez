@@ -11,13 +11,13 @@ export class CatGrep {
   /**
    * Método forma 1 que resuelve el ejercicio 1 haciendo uso del metodo pipe de un stream
    */
-  public forma1() {
+  public forma1(callback: (err: string | undefined, data: string | undefined) => void) {
     if (process.argv.length !== 4) {
-      console.log(chalk.red('Por favor ponga un archivo y una palabra a buscar.'));
+      callback(chalk.red('Por favor ponga un archivo y una palabra a buscar.'), undefined);
     } else {
       access(process.argv[2], (err) => {
         if (err) {
-          console.log(chalk.red('El archivo no existe.'));
+          callback(chalk.red('El archivo no existe.'), undefined);
         } else {
           const cat = spawn('cat', [process.argv[2]]);
           const grep = spawn('grep', [process.argv[3]]);
@@ -25,12 +25,12 @@ export class CatGrep {
           let out = '';
           grep.stdout.on('data', (piece) => out += piece);
           grep.on('close', () => {
-            console.log(chalk.blue(out));
+            callback(undefined, chalk.blue(out));
             const cont = new RegExp(process.argv[3], 'g');
             if (out.match(cont) != undefined) {
-              console.log(chalk.green("La palabra " + process.argv[3] + " aparece " + out.match(cont)?.length + " veces."));
+              callback(undefined, chalk.green("La palabra " + process.argv[3] + " aparece " + out.match(cont)?.length + " veces."));
             } else {
-              console.log(chalk.red("La palabra " + process.argv[3] + " no aparece en el archivo."));
+              callback(undefined, chalk.red("La palabra " + process.argv[3] + " no aparece en el archivo."));
             }
           });
         }
@@ -40,27 +40,27 @@ export class CatGrep {
   /**
    * Método forma 2 que resuelve el ejercicio 1 sin usar el metodo pipe
    */
-  public forma2() {
+  public forma2(callback: (err: string | undefined, data: string | undefined) => void) {
     if (process.argv.length !== 4) {
-      console.log(chalk.red('Por favor ponga un archivo y una palabra a buscar.'));
+      callback(chalk.red('Por favor ponga un archivo y una palabra a buscar.'), undefined);
     } else {
       access(process.argv[2], (err) => {
         if (err) {
-          console.log(chalk.red('El archivo no existe.'));
+          callback(chalk.red('El archivo no existe.'), undefined);
         } else {
           const cat = spawn('cat', [process.argv[2]]);
           const grep = spawn('grep', [process.argv[3]]);
           cat.stdout.on('data', (piece) => grep.stdin.write(piece));
           cat.on('close', () => {
             let out = '';
-            grep.stdout.on('data', (piece) => out += piece);
+            grep.stdout.on('data', (piece) => callback(undefined, chalk.blue(piece)));
             grep.on('close', () => {
-              console.log(chalk.blue(out));
+              callback(undefined, chalk.blue(out));
               const cont = new RegExp(process.argv[3], 'g');
               if (out.match(cont) != undefined) {
-                console.log(chalk.green("La palabra " + process.argv[3] + " aparece " + out.match(cont)?.length + " veces."));
+                callback(undefined, chalk.green("La palabra " + process.argv[3] + " aparece " + out.match(cont)?.length + " veces."));
               } else {
-                console.log(chalk.red("La palabra " + process.argv[3] + " no aparece en el archivo."));
+                callback(undefined, chalk.red("La palabra " + process.argv[3] + " no aparece en el archivo."));
               }
             });
           });
@@ -69,3 +69,11 @@ export class CatGrep {
     }
   }
 }
+
+new CatGrep().forma2((err, data) => {
+  if (err) {
+    console.log(err);
+  } else if (data) {
+    console.log(data);
+  }
+});
