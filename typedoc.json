@@ -1,7 +1,10 @@
 {
   "entryPoints": [
     "./src/basicFunctions.ts",
-    "./src/ejercicio1.ts"
+    "./src/ejercicio1.ts", 
+    "./src/ejercicio2.ts",
+    "./src/ejercicio3.ts",
+    "./src/ejercicio4.ts"
   ],
   "out": "./docs"
 }
