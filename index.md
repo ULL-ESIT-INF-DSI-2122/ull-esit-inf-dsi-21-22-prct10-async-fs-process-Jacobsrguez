@@ -18,7 +18,9 @@
 ### Resumen<a name = "resumen"></a>
 
 En esta práctica se plantan una serie de ejercicios a resolver haciendo uso de las APIs proporcionadas por Node.js para interactuar con el sistema de ficheros, así como para crear procesos  
-  
+
+### Ejercicio 1<a name = "ej1"></a>  
+![](images/ej1.png.JPG)
 ### Ejercicio 2<a name = "ej2"></a>
 
 Implementar un programa que devuelva el número de ocurrencias de una palabra en un fichero de texto. Para acceder al contenido del fichero deberá expandir el comando cat, además de expandir el comando grep con la salida proporcionada por cat como entrada para obtener las lineas en las que se encuentra la palabra buscada.
