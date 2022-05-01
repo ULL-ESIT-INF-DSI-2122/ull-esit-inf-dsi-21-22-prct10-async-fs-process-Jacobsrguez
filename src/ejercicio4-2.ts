@@ -96,6 +96,21 @@ export class Ejercicio42 {
       }
     });
   }
+  public copy(newPath: string, callback: (err: string | undefined, data: string | undefined) => void): void {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red("El archivo no existe " + err.message), undefined);
+      } else {
+        fs.cp(this.path, newPath, (err) => {
+          if (err) {
+            callback(chalk.red("El archivo no existe " + err.message), undefined);
+          } else {
+            callback(undefined, chalk.green("El archivo ha sido copiado"));
+          }
+        });
+      }
+    });
+  }
 }
 
 new Ejercicio42("./src/leer", "prueba").removeDir((err, data) => {
