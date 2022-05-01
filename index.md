@@ -10,11 +10,11 @@
 - Fecha de entrega: 25/04/2022
 
 ## Índice
-- [Resumen] (#resumen)
+- [Resumen](#resumen)
 - [Ejercicio1]
-- [Ejercicio2] (#ej2)
-- [Ejericicio3] (#ej3)
-- [Ejercicio4] (#ej4)
+- [Ejercicio2](#ej2)
+- [Ejericicio3](#ej3)
+- [Ejercicio4](#ej4)
 ### Resumen <a name = "resumen"></a>
 
 En esta práctica se plantan una serie de ejercicios a resolver haciendo uso de las APIs proporcionadas por Node.js para interactuar con el sistema de ficheros, así como para crear procesos  
