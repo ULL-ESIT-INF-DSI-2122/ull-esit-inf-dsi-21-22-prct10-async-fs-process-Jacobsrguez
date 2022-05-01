@@ -15,11 +15,11 @@
 - [Ejercicio2](#ej2)
 - [Ejericicio3](#ej3)
 - [Ejercicio4](#ej4)
-### Resumen <a name = "resumen"></a>
+### Resumen<a name = "resumen"></a>
 
 En esta práctica se plantan una serie de ejercicios a resolver haciendo uso de las APIs proporcionadas por Node.js para interactuar con el sistema de ficheros, así como para crear procesos  
   
-### Ejercicio 2 <a name = "ej2"></a>
+### Ejercicio 2<a name = "ej2"></a>
 
 Implementar un programa que devuelva el número de ocurrencias de una palabra en un fichero de texto. Para acceder al contenido del fichero deberá expandir el comando cat, además de expandir el comando grep con la salida proporcionada por cat como entrada para obtener las lineas en las que se encuentra la palabra buscada.
 
@@ -74,7 +74,7 @@ Para la resolucion, lo que hice fue:
 Cuando muestro los mensajes, los fallos, los muestro en rojo y los aciertos de color verde haciendo uso del paquete chalk  
   
 
-### Ejercicio 3 <a name = "ej3."></a>
+### Ejercicio 3<a name = "ej3."></a>
 
 En este ejercicio se nos pide que a partir de la practica 9, desarrollar un ejercicio que cada vez que se produzca un cambio en el directorio, el programa debe indicar si se ha añadido, borrado o modificado una nota. Para lograrlo añadi al directorio de la practica, los archivos para hacer el yargs de la practica 9. Ademas hay que hacer uso de la funcion watch
 
@@ -149,4 +149,4 @@ Con esto ya tengo cubierto el apartado de crear y borrar un fichero, y ya solo q
 
 ¿Como haria para que no solo se observase el directorio de un unico usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicacion de notas?  
 
-### Ejercicio 4 <a name = "ej4"></a>
+### Ejercicio 4<a name = "ej4"></a>
