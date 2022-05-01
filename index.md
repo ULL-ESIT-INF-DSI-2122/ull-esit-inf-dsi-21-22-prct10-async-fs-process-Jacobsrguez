@@ -145,7 +145,8 @@ Si el archivo existe, hago uso de la funcion watch como espcifica el guion de la
 
 Con esto ya tengo cubierto el apartado de crear y borrar un fichero, y ya solo queda mostrar cuando se edita un fichero, por lo tanto si el eventType no es rename, es change. Leemos el archivo con el readFile, como explique antes, tiene un manejador err, si falla es que el archivo no pudo ser leido, pero si no da fallo es que el archivo se modifico correctamente. Hago un callback y muestro por pantalla el mensaje y el contenedor del err.mesaje.
 
-¿Como haria para mostrar, no solo el nombre, sino tambien el contenido del fichero, en el caso de que haya sifo creado o modificado?
+¿Como haria para mostrar, no solo el nombre, sino tambien el contenido del fichero, en el caso de que haya sido creado o modificado?  
+
 
 ¿Como haria para que no solo se observase el directorio de un unico usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicacion de notas?  
 
