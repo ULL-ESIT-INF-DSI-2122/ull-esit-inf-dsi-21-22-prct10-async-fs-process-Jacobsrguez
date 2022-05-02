@@ -148,24 +148,24 @@ Si el archivo existe, hago uso de la funcion watch como espcifica el guion de la
 Con esto ya tengo cubierto el apartado de crear y borrar un fichero, y ya solo queda mostrar cuando se edita un fichero, por lo tanto si el eventType no es rename, es change. Leemos el archivo con el readFile, como explique antes, tiene un manejador err, si falla es que el archivo no pudo ser leido, pero si no da fallo es que el archivo se modifico correctamente. Hago un callback y muestro por pantalla el mensaje y el contenedor del err.mesaje.
 
 ¿Como haria para que no solo se observase el directorio de un unico usuario sino todos los directorios correspondientes a los diferentes usuarios de la aplicacion de notas?  
-No se puede ya que hacer uso de la recursisvidad y en linux no sirve
+Para realizar este apartado, es necesario usar la opcion recursiva dentro de la funcion watch. Y en la documentacion de node aparece esto: The recursive option is only supported on macOS and Windows. An ERR_FEATURE_UNAVAILABLE_ON_PLATFORM exception will be thrown when the option is used on a platform that does not support it. Por lo tanto no es posible la realizacion de este apartado
 ### Ejercicio 4<a name = "ej4"></a>
 
 Desarrolle una aplicación que permita hacer de wrapper de los distintos comandos empleados en Linux para el manejo de ficheros y directorios. Para ello, cree una clase que tiene un metodo para la resoluion de cada puntos menos para el ultimo que para ese, creo varios metodos. 
 
 ``` typescript
 export class Ejercicio4 {
-  constructor() {}
+  constructor(private path: string, private aux: string) {}
   /**
    * Método que demuestra si la ruta que se le pasa contiene un directorio o un fichero
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public directoryFile(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("El archivo no existe " + err.message), undefined);
+        callback(chalk.red(err.message), undefined);
       } else {
-        const ls = spawn('ls', ['-ld', process.argv[2]]);
+        const ls = spawn('ls', ['-ld', this.path]);
         let lsOutput = '';
         ls.stdout.on('data', (chain) => lsOutput += chain);
         ls.on('close', () => {
@@ -185,11 +185,11 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public newDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("El directorio no existe " + err.message), undefined);
+        callback(chalk.red(err.message), undefined);
       } else {
-        const mkdir = spawn('mkdir', [process.argv[2] + '/' + process.argv[3]]);
+        const mkdir = spawn('mkdir', [this.path + '/' + this.aux]);
         let mkdirOutput = '';
         mkdir.stdout.on('data', (chain) => mkdirOutput += chain);
         mkdir.on('close', () => {
@@ -203,11 +203,11 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public list(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("El directorio no existe " + err.message), undefined);
+        callback(chalk.red(err.message), undefined);
       } else {
-        const ls = spawn('ls', [process.argv[2]]);
+        const ls = spawn('ls', [this.path]);
         let lsOutput = '';
         ls.stdout.on('data', (chain) => lsOutput += chain);
         ls.on('close', () => {
@@ -221,11 +221,11 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public show(callback: (err: string | undefined, data: string | undefined) => void) : void {
-    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("El archivo no existe " + err.message), undefined);
+        callback(chalk.red(err.message), undefined);
       } else {
-        const cat = spawn('cat', [process.argv[2]]);
+        const cat = spawn('cat', [this.path]);
         let catOutput = '';
         cat.stdout.on('data', (chain) => catOutput += chain);
         cat.on('close', () => {
@@ -239,11 +239,11 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public remove(callback: (err: string | undefined, data: string | undefined) => void): void {
-    fs.access(process.argv[2], fs.constants.F_OK, (err) => {
+    fs.access(this.path, fs.constants.F_OK, (err) => {
       if (err) {
-        callback(chalk.red("El archivo no existe " + err.message), undefined);
+        callback(chalk.red(err.message), undefined);
       } else {
-        const rm = spawn('rm', ['-rf', process.argv[2]]);
+        const rm = spawn('rm', ['-rf', this.path]);
         let rmOutput = '';
         rm.stdout.on('data', (chain) => rmOutput += chain);
         rm.on('close', () => {
@@ -258,11 +258,17 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public move(callback: (err: string | undefined, data: string | undefined) => void): void {
-    const move = spawn('mv', [process.argv[2], process.argv[3]]);
-    let moveOutput = '';
-    move.stdout.on('data', (chain) => moveOutput += chain);
-    move.on('close', () => {
-      callback(undefined, chalk.green("El archivo ha sido movido"));
+    fs.access(this.path, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red(err.message), undefined);
+      } else {
+        const move = spawn('mv', [this.path, this.aux]);
+        let moveOutput = '';
+        move.stdout.on('data', (chain) => moveOutput += chain);
+        move.on('close', () => {
+          callback(undefined, chalk.green("El archivo ha sido movido"));
+        });
+      }
     });
   }
 
@@ -271,11 +277,17 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public copyDirectory(callback: (err: string | undefined, data: string | undefined) => void): void {
-    const copy = spawn('cp', ['-r', process.argv[2], process.argv[3]]);
-    let copyOutput = '';
-    copy.stdout.on('data', (chain) => copyOutput += chain);
-    copy.on('close', () => {
-      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    fs.access(this.path, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red(err.message), undefined);
+      } else {
+        const copy = spawn('cp', ['-r', this.path, this.aux]);
+        let copyOutput = '';
+        copy.stdout.on('data', (chain) => copyOutput += chain);
+        copy.on('close', () => {
+          callback(undefined, chalk.green("El directorio ha sido copiado"));
+        });
+      }
     });
   }
 
@@ -284,11 +296,17 @@ export class Ejercicio4 {
    * @param callback patron callback devuelve un error o un mensaje con la evento hecho
    */
   public copyFile(callback: (err: string | undefined, data: string | undefined) => void): void {
-    const copy = spawn('cp', [process.argv[2], process.argv[3]]);
-    let copyOutput = '';
-    copy.stdout.on('data', (chain) => copyOutput += chain);
-    copy.on('close', () => {
-      callback(undefined, chalk.green("El archivo ha sido copiado"));
+    fs.access(this.path, fs.constants.F_OK, (err) => {
+      if (err) {
+        callback(chalk.red(err.message), undefined);
+      } else {
+        const copy = spawn('cp', [this.path, this.aux]);
+        let copyOutput = '';
+        copy.stdout.on('data', (chain) => copyOutput += chain);
+        copy.on('close', () => {
+          callback(undefined, chalk.green("El archivo ha sido copiado"));
+        });
+      }
     });
   }
 }
@@ -298,12 +316,12 @@ Se nos pide:
 
 - Dada una ruta concreta, mostrar si es un directorio o un fichero.  
 Metodo `directoryFile`  
-Para ello lo que hago es primero comprobar que el archivo existe, si no existe llamo al callback y devuelvo que el archivo no existe, pero si el archivo existe. Despliego el comando ls y le paso las opciones -ld sobre el segundo argumento que se le pasa por comando que es la ruta del directorio o archivo. Luego inicializo una string a vacio. Ahora concateno los valores del buffer en la variable.  
-Una vez finaliozada la ejecucion anterior le hago un spplit a la variable para separar la cosas dentro de un array. Ya solo queda comprobar si en la parte de los permisos en la primera parte hay una d, si la hay quiere decir que es un directorio y si no la hay es que es un fichero y solo queda mostrar de lo que se trata
+Para ello lo que hago es primero comprobar que el archivo existe, si no existe llamo al callback y devuelvo que el error, pero si el archivo existe, despliego el comando ls y le paso las opciones -ld sobre el segundo argumento que se le pasa por comando que es la ruta del directorio o archivo. Luego inicializo una string a vacio. Ahora concateno los valores del buffer en la variable.  
+Una vez finalizada la ejecucion anterior le hago un spplit a la variable para separar la cosas dentro de un array. Ya solo queda comprobar si en la parte de los permisos en la primera parte hay una d, si la hay quiere decir que es un directorio y si no la hay es que es un fichero y solo queda mostrar de lo que se trata
 
 - Crear un nuevo directorio a partir de una nueva ruta que recibe como parámetro.  
 Metodo `newDirectory`  
-Como en el metotodo anterior con el acces compruebo que si existe o no el archivo. Si no existe llamo al patron callback. Si existe, con el funcion spawn desplego el comando mdkir, y le paso la ruta y luego, el nombre del fichero. Inicializo una variable a vacio y luego la concateno con el buffe. Cuando esta halla terminado muestro que se creo directamente  
+Como en el metotodo anterior con el acces compruebo que si existe o no el archivo. Si no existe llamo al patron callback. Si existe, con el funcion spawn desplego el comando mdkir, y le paso la ruta y luego, el nombre del fichero. Inicializo una variable a vacio y luego la concateno con el buffer. Cuando esta halla terminado muestro que se creo directamente  
 
 - Listar los ficheros dentro de un directorio.  
 Metodo `list`  
